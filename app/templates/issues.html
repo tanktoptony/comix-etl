@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>
+            Issues for {{ series_title }}
+        </h1>
+        <div class="meta">
+            Series ID {{ series_id }} • {{ issues|length }} issue(s)
+        </div>
+    </div>
+
+    <div>
+        <a class="back-link" href="/series/{{ series_id }}/gallery">View Gallery</a>
+    </div>
+</div>
+
+<div style="margin-bottom:1rem;">
+    <a class="back-link" href="/series">← Back to all series</a>
+</div>
+
+<div class="table-wrap">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Issue #</th>
+                <th>Cover Date</th>
+                <th>Thumbnail</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for issue in issues %}
+            <tr>
+                <td>#{{ issue.issue_number }}</td>
+                <td>{{ issue.cover_date }}</td>
+                <td>
+                    {% if issue.cover_image_url %}
+                        <img class="thumb" src="{{ issue.cover_image_url }}" alt="Cover for issue {{ issue.issue_number }}" />
+                    {% else %}
+                        <span class="card-sub">No image</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

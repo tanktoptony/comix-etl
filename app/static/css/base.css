@@ -1,0 +1,529 @@
+:root {
+    --x-blue: #0b1e6b;
+    --x-gold: #f4d03f;
+    --x-offwhite: #fff9d6;
+    --x-line: #000000;
+    --x-bg-panel: #1a1a1a;
+    --x-text-main: #ffffff;
+    --x-red-burst: #c4122f;
+}
+
+body.site-bg {
+    background-color: #0f0f10;
+    color: var(--x-text-main);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    margin: 0;
+}
+
+.page-wrapper {
+    max-width: 1200px;
+    margin: 1rem auto 4rem auto;
+    padding: 0 1rem;
+}
+
+/* HEADER */
+.site-header {
+    background: var(--x-blue);
+    border-bottom: 4px solid var(--x-line);
+    color: #fff;
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: .75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.brand-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.brand-title {
+    line-height: 1.1;
+    font-weight: 800;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 1rem;
+}
+.brand-main {
+    font-size: 1rem;
+}
+.brand-sub {
+    font-size: .7rem;
+    color: var(--x-gold);
+    font-weight: 700;
+}
+
+.main-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+.nav-link {
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid var(--x-line);
+    background: var(--x-gold);
+    color: #000;
+    padding: .3rem .5rem;
+    box-shadow: 2px 2px 0 #000;
+}
+.nav-link:hover {
+    transform: translate(-1px, -1px) rotate(-1deg);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.cart-hud {
+    text-decoration: none;
+    color: inherit;
+}
+.cart-hud-box {
+    padding: .5rem .75rem;
+    min-width: 140px;
+}
+.cart-hud-label {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--x-gold);
+}
+.cart-hud-values {
+    font-size: .8rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+/* CORE COMIC COMPONENTS */
+
+.comic-panel {
+    background: var(--x-bg-panel);
+    border: 3px solid var(--x-line);
+    box-shadow: 4px 4px 0 #000;
+    color: var(--x-text-main);
+    padding: 1rem;
+    position: relative;
+    background-image: url("/static/img/halftone-dot.png");
+    background-size: 220px;
+}
+
+.caption-box {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .4rem .6rem;
+    background: var(--x-offwhite);
+    border: 3px solid var(--x-line);
+    color: var(--x-blue);
+    font-weight: 800;
+    font-size: .7rem;
+    line-height: 1.1;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0 #000;
+}
+
+.burst-tag {
+    background: var(--x-red-burst);
+    color: #fff;
+    font-size: .6rem;
+    font-weight: 800;
+    padding: .25rem .4rem;
+    border: 2px solid var(--x-line);
+    clip-path: polygon(
+        10% 0%, 90% 0%,
+        100% 40%, 100% 60%,
+        90% 100%, 10% 100%,
+        0% 60%, 0% 40%
+    );
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+.burst-overlay {
+    position: absolute;
+    top: .5rem;
+    left: .5rem;
+    z-index: 5;
+}
+
+/* HERO AREA ON ISSUE PAGE */
+.issue-hero {
+    margin-bottom: 1.5rem;
+}
+.issue-hero-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.issue-cover-frame {
+    position: relative;
+    max-width: 200px;
+    flex: 0 0 auto;
+}
+.issue-cover-img {
+    width: 100%;
+    border: 3px solid var(--x-line);
+    box-shadow: 4px 4px 0 #000;
+    display: block;
+}
+.issue-meta-block {
+    flex: 1 1 200px;
+    min-width: 200px;
+}
+.issue-title {
+    margin: 0 0 .5rem 0;
+    color: var(--x-gold);
+    font-size: 1.1rem;
+    line-height: 1.2;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* LISTINGS */
+.listings-section {
+    margin-bottom: 2rem;
+}
+.listing-card {
+    border: 2px solid var(--x-line);
+    background: #fefefe;
+    background-image: url("/static/img/halftone-dot.png");
+    background-size: 180px;
+    box-shadow: 3px 3px 0 #000;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.listing-left {
+    flex: 1 1 200px;
+}
+.listing-right {
+    flex: 0 0 auto;
+    text-align: right;
+    min-width: 140px;
+}
+
+/* CART ELEMENTS */
+.cart-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.cart-row-left {
+    flex: 1 1 200px;
+}
+.cart-row-right {
+    flex: 0 0 auto;
+    text-align: right;
+    min-width: 140px;
+}
+.cart-summary-box {
+    border: 3px solid var(--x-line);
+    background: var(--x-offwhite);
+    color: #000;
+    box-shadow: 3px 3px 0 #000;
+    padding: 1rem;
+    font-size: .8rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* TYPOGRAPHY UTILITIES */
+.strong {
+    font-weight: 700;
+}
+.tiny {
+    font-size: .7rem;
+    line-height: 1.2;
+}
+.muted {
+    color: #bbb;
+}
+.italic {
+    font-style: italic;
+}
+.price-text {
+    font-weight: 800;
+    font-size: .9rem;
+    color: #000;
+    background: var(--x-gold);
+    border: 2px solid var(--x-line);
+    box-shadow: 2px 2px 0 #000;
+    padding: .25rem .5rem;
+    display: inline-block;
+}
+.bubble {
+    background: #fff;
+    color: #000;
+    border: 3px solid #000;
+    box-shadow: 3px 3px 0 #000;
+    padding: .5rem .75rem;
+    font-size: .8rem;
+    font-weight: 600;
+    line-height: 1.3;
+    max-width: 260px;
+    position: relative;
+}
+
+/* ADD / REMOVE BUTTONS */
+.add-btn {
+    background: var(--x-gold);
+    border: 2px solid var(--x-line);
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #000;
+    transition: transform 0.08s;
+    font-size: .75rem;
+    line-height: 1.2;
+    color: #000;
+}
+.add-btn:hover {
+    transform: translate(-1px, -1px) rotate(-1deg);
+    box-shadow: 4px 4px 0 #000;
+}
+.add-btn.added-state {
+    background: #9cff9c;
+    border-color: #000;
+    color: #000;
+}
+.remove-btn {
+    background: #fff;
+    color: #000;
+}
+
+/* SIMPLE LINK BACK */
+.back-link {
+    display: inline-block;
+    font-size: .75rem;
+    margin: 1rem 0 .5rem 0;
+    color: var(--x-gold);
+    text-decoration: none;
+    font-weight: 700;
+}
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* RESPONSIVE TWEAKS */
+@media (max-width: 640px) {
+    .listing-right,
+    .cart-row-right {
+        text-align: left;
+    }
+}
+
+/* CART PAGE LAYOUT */
+.cart-page-wrapper {
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+}
+
+.cart-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Left column */
+.cart-items-panel {
+    flex: 1 1 300px;
+    min-width: 260px;
+}
+
+/* Right column / summary box */
+.cart-summary-panel {
+    flex: 0 0 260px;
+    min-width: 240px;
+    max-height: fit-content;
+    font-size: .8rem;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.cart-section-title {
+    color: var(--x-gold);
+    font-weight: 800;
+    font-size: .9rem;
+    text-transform: uppercase;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+/* Rows inside summary box */
+.cart-summary-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: .5rem;
+}
+
+.cart-summary-total {
+    border-top: 2px solid #000;
+    padding-top: .5rem;
+    margin-top: .5rem;
+    font-weight: 800;
+}
+
+.summary-label {
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.summary-value {
+    font-size: .8rem;
+    font-weight: 800;
+}
+
+.checkout-cta-wrapper {
+    margin-top: 1rem;
+    display: grid;
+    gap: .75rem;
+}
+
+.checkout-btn {
+    width: 100%;
+    text-align: center;
+    font-size: .8rem;
+}
+
+.checkout-note {
+    max-width: 260px;
+    font-size: .7rem;
+    line-height: 1.3;
+}
+
+/* empty cart message */
+.empty-state {
+    margin-top: 1rem;
+}
+
+/* Marketplace hero section */
+.marketplace-hero {
+    margin: 1rem 0 2rem 0;
+}
+.marketplace-title {
+    color: var(--x-gold);
+    font-size: 1.1rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-transform: uppercase;
+    margin: 0.5rem 0;
+}
+.marketplace-blurb {
+    max-width: 600px;
+    margin: 0 0 1rem 0;
+}
+
+/* Search row */
+.marketplace-search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: .5rem;
+}
+.marketplace-search-input {
+    flex: 1 1 220px;
+    min-width: 200px;
+    padding: .5rem .6rem;
+    border: 2px solid var(--x-line);
+    box-shadow: 2px 2px 0 #000;
+    font-size: .8rem;
+    font-weight: 600;
+}
+.marketplace-search-btn {
+    flex: 0 0 auto;
+}
+
+/* Results section */
+.results-section {
+    margin-bottom: 3rem;
+}
+
+/* Grid of issues */
+.issue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Individual issue card */
+.issue-card-grid {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 1rem;
+}
+@media (max-width: 480px) {
+    .issue-card-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Cover block inside each card */
+.issue-card-cover-wrapper {
+    position: relative;
+}
+.issue-card-cover-frame {
+    position: relative;
+    width: 100%;
+    max-width: 90px;
+}
+.issue-card-cover-img {
+    width: 100%;
+    border: 2px solid var(--x-line);
+    box-shadow: 3px 3px 0 #000;
+    display: block;
+}
+
+/* Right side of the card */
+.issue-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+.issue-card-head {
+    font-size: .8rem;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--x-gold);
+}
+.issue-card-bubble {
+    max-width: 220px;
+    font-size: .7rem;
+}
+
+/* Price line */
+.issue-card-price {
+    color: #fff;
+    font-weight: 600;
+}
+.price-inline {
+    background: var(--x-gold);
+    color: #000;
+    border: 2px solid var(--x-line);
+    box-shadow: 2px 2px 0 #000;
+    padding: .15rem .4rem;
+    font-weight: 800;
+    font-size: .7rem;
+}
+
+/* CTA button under each card */
+.issue-card-cta {
+    font-size: .7rem;
+    text-align: center;
+    width: fit-content;
+}

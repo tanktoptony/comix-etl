@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ComixCatalog Marketplace</title>
+
+    <!-- Viewport for mobile responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Base styles / theme tokens / comic panel styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+    <!-- Page-specific styles (optional, only exist if you created them) -->
+    {% if extra_css %}
+        <link rel="stylesheet" href="{{ url_for('static', filename=extra_css) }}">
+    {% endif %}
+</head>
+<body class="site-bg">
+
+    {# Global header with nav + mini-cart HUD #}
+    {% include "partials/header.html" %}
+
+    <main class="page-wrapper">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% include "partials/footer.html" %}
+
+    <!-- Core UI helpers / cart state management -->
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

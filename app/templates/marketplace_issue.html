@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a class="back-link" href="/marketplace">⟵ Back to Marketplace</a>
+
+<section class="comic-panel issue-hero">
+    <div class="caption-box">
+        <span>Key Issue Marketplace</span>
+        {% if issue.is_key %}
+            <span class="burst-tag">KEY ISSUE</span>
+        {% endif %}
+    </div>
+
+    <div class="issue-hero-inner">
+        <div class="issue-cover-frame">
+            <img src="{{ issue.cover_url }}" alt="{{ issue.title }}" class="issue-cover-img" />
+            {% if issue.key_callout %}
+                <div class="burst-tag burst-overlay">{{ issue.key_callout }}</div>
+            {% endif %}
+        </div>
+
+        <div class="issue-meta-block">
+            <h1 class="issue-title">
+                {{ issue.title }}
+                {% if issue.issue_number %}#{{ issue.issue_number }}{% endif %}
+                {% if issue.year %}({{ issue.year }}){% endif %}
+            </h1>
+
+            {% if issue.tagline %}
+            <div class="bubble">
+                "{{ issue.tagline }}"
+            </div>
+            {% endif %}
+
+            {% if issue.description %}
+            <p class="muted tiny">{{ issue.description }}</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="listings-section">
+    <div class="caption-box">
+        Available Listings ({{ listings|length }})
+    </div>
+
+    {% for item in listings %}
+    <div class="listing-card listing-row">
+        <div class="listing-left">
+            <div class="strong">{{ item.grade_label }}</div>
+            <div class="tiny muted italic">{{ item.notes }}</div>
+            <div class="tiny muted">Seller: {{ item.seller }}</div>
+            {% if item.variant %}
+            <div class="tiny muted">Variant: {{ item.variant }}</div>
+            {% endif %}
+        </div>
+
+        <div class="listing-right">
+            <div class="price-text">{{ item.price_display }}</div>
+
+            <button
+                class="add-btn js-add-to-cart"
+                data-listing-id="{{ item.listing_id }}"
+                data-title="{{ issue.title|e }}"
+                data-issue-number="{{ issue.issue_number }}"
+                data-grade="{{ item.grade|e }}"
+                data-price-cents="{{ item.price_cents }}"
+                data-price-display="${{ '%.2f' % (item.price_cents / 100) }}"
+            >
+                Add to Cart
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

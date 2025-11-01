@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="comic-panel">
+    <div class="caption-box">Key Issue Marketplace</div>
+
+    <h1 class="title-block">
+        ComixCatalog Marketplace
+    </h1>
+
+    <p class="muted">
+        Hunt key issues. Compare condition. Buy the copy you want.
+    </p>
+
+    <div class="search-row">
+        <input class="search-input"
+               placeholder="Search (ex: Gambit, 1st appearance, Uncanny X-Men 266)" />
+        <button class="cta-button">
+            Search
+        </button>
+    </div>
+</div>
+
+<div class="result-card">
+    <div class="cover-col">
+        <div class="cover-frame">
+            <img src="{{ issue.cover_url }}"
+                 alt="{{ issue.title }}" />
+        </div>
+    </div>
+
+    <div class="info-col">
+        <div class="caption-box">First Gambit</div>
+
+        <div class="issue-headline">
+            {{ issue.title }}
+        </div>
+
+        <div class="muted tiny">
+            {{ issue.series_title }} #{{ issue.issue_number }} • {{ issue.year }}
+        </div>
+
+        <div class="bubble">
+            "{{ issue.tagline }}"
+        </div>
+
+        <a class="cta-button"
+           href="/marketplace/issue/{{ issue.issue_id }}">
+            View Listings →
+        </a>
+    </div>
+</div>
+
+{% endblock %}
