@@ -1,30 +1,25 @@
 <header class="site-header">
-    <div class="header-inner">
-        <div class="brand-block">
-            <div class="brand-title">
-                <span class="brand-main">ComixCatalog</span>
-                <span class="brand-sub">Marketplace Beta</span>
-            </div>
-            <div class="brand-tag caption-box">
-                <span>Discogs for Comics</span>
-            </div>
+  <div class="header-inner container">
+    <a class="brand" href="/marketplace" aria-label="ComixCatalog Home">
+      <img class="logo-badge" src="{{ url_for('static', filename='img/logos/cc_badge.png') }}" alt="" />
+      <img class="logo-wordmark" src="{{ url_for('static', filename='img/logos/wordmark.png') }}" alt="COMI(X)CATALOG" />
+      <span class="sr-only">ComixCatalog</span>
+    </a>
+
+    <nav class="main-nav">
+      <a href="/marketplace" class="nav-link{% if request.path.startswith('/marketplace') %} active{% endif %}">Marketplace</a>
+      <a href="/series" class="nav-link{% if request.path.startswith('/series') %} active{% endif %}">Series</a>
+      <a href="/gallery" class="nav-link{% if request.path.startswith('/gallery') %} active{% endif %}">Gallery</a>
+    </nav>
+
+    <a href="/marketplace/cart" class="cart-hud">
+      <div class="cart-hud-box comic-panel">
+        <div class="cart-hud-label">Cart</div>
+        <div class="cart-hud-values">
+          <span id="miniCartCount">0</span> items |
+          <span id="miniCartTotal">$0.00</span>
         </div>
-
-        <nav class="main-nav">
-            <a href="/marketplace" class="nav-link">Marketplace</a>
-            <a href="/series" class="nav-link">Series</a>
-            <a href="/issues" class="nav-link">Issues</a>
-            <a href="/gallery" class="nav-link">Gallery</a>
-        </nav>
-
-        <a href="/marketplace/cart" class="cart-hud">
-            <div class="cart-hud-box comic-panel">
-                <div class="cart-hud-label">Cart</div>
-                <div class="cart-hud-values">
-                    <span id="miniCartCount">0</span> items |
-                    <span id="miniCartTotal">$0.00</span>
-                </div>
-            </div>
-        </a>
-    </div>
+      </div>
+    </a>
+  </div>
 </header>

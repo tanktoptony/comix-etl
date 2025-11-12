@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ issue.series_title|default("Unknown Series") }} #{{ issue.issue_number|default("?") }} · ComixCatalog{% endblock %}
+{% block content %}
+<h2>{{ issue.series_title|default("Unknown Series") }} #{{ issue.issue_number|default("?") }}</h2>
+{% if issue.issue_title %}<div style="opacity:.8">{{ issue.issue_title }}</div>{% endif %}
+
+<div style="margin-top:12px;">
+  <a href="{{ url_for('ui_search') }}">← Back to search</a>
+</div>
+
+<div style="margin-top:16px;border:1px solid #222;padding:12px;border-radius:10px;">
+  <h3 style="margin:0 0 8px;">Listings</h3>
+  <div style="opacity:.8">No listings yet for this issue. Marketplace layer comes next.</div>
+</div>
+{% endblock %}

@@ -1,74 +1,20 @@
 {% extends "base.html" %}
-
+{% block title %}Cart · ComixCatalog{% endblock %}
 {% block content %}
-
-<a class="back-link" href="/marketplace">⟵ Back to Marketplace</a>
-
-<section class="cart-page-wrapper">
-    <div class="caption-box">
-        <span>Your Cart</span>
-        <span class="burst-tag">Preview</span>
+<section class="section">
+  <div class="grid cols-3">
+    <div class="card" style="grid-column: span 2;">
+      <h2 class="card-title">Your Cart</h2>
+      <div class="muted">Your cart is empty in UI-only mode.</div>
     </div>
-
-    <div class="cart-layout">
-        <!-- LEFT COLUMN: line items -->
-        <div class="cart-items-panel comic-panel">
-            <h2 class="cart-section-title">Items You’re Buying</h2>
-
-            {# JS will inject all cart rows here #}
-            <div id="cart-line-items"></div>
-
-            <div id="cart-empty-state" class="empty-state tiny muted" style="display:none;">
-                Your cart is empty. Go grab a key issue.
-            </div>
-        </div>
-
-        <!-- RIGHT COLUMN: totals / checkout box -->
-        <aside class="cart-summary-panel cart-summary-box">
-            <div class="cart-summary-row">
-                <div class="summary-label">Subtotal</div>
-                <div class="summary-value" id="cart-subtotal">$0.00</div>
-            </div>
-
-            <div class="cart-summary-row">
-                <div class="summary-label">Shipping</div>
-                <div class="summary-value" id="cart-shipping">$0.00</div>
-            </div>
-
-            <div class="cart-summary-row cart-summary-total">
-                <div class="summary-label">Total</div>
-                <div class="summary-value" id="cart-total">$0.00</div>
-            </div>
-
-            <div class="checkout-cta-wrapper">
-                <button class="add-btn checkout-btn">
-                    Proceed to Checkout
-                </button>
-                <div class="bubble checkout-note">
-                    "On checkout, funds go into secure escrow. Seller ships, you confirm condition, then payment is released."
-                </div>
-            </div>
-        </aside>
-    </div>
+    <aside class="card">
+      <h3 class="card-title">Summary</h3>
+      <div class="row"><span class="muted">Items:</span> 0</div>
+      <div class="row"><span class="muted">Subtotal:</span> $0.00</div>
+      <div class="stack" style="margin-top:10px;">
+        <a class="btn btn-primary" href="/marketplace">Continue Browsing</a>
+      </div>
+    </aside>
+  </div>
 </section>
-
-{% endblock %}
-
-{% block scripts %}
-<script>
-// Small enhancement: if cart is empty, show "empty-state" message
-document.addEventListener("DOMContentLoaded", function() {
-    const container = document.getElementById("cart-line-items");
-    const emptyState = document.getElementById("cart-empty-state");
-
-    // after cart.js renders:
-    setTimeout(function() {
-        if (container && emptyState) {
-            if (container.children.length === 0) {
-                emptyState.style.display = "block";
-            }
-        }
-    }, 0);
-});
-</script>
 {% endblock %}

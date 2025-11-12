@@ -61,6 +61,17 @@ body.site-bg {
     font-weight: 700;
 }
 
+  .grid { display:grid; gap:12px; }
+  .grid.cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .card { background:#0C1020; border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px; }
+  .cover { width:100%; aspect-ratio:2/3; background:#0b1227; border:1px solid rgba(255,255,255,.05); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#445; font-size:12px; }
+  .btn { background:#FFC928; color:#111827; border:none; padding:8px 12px; border-radius:999px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn-outline { background:transparent; color:#FFC928; border:1px solid #FFC928; }
+  .muted { color:#9CA3AF; }
+  @media (max-width: 900px) {.grid.cols-3 { grid-template-columns: 1fr 1fr; }}
+  @media (max-width: 640px) {.grid.cols-3 { grid-template-columns: 1fr; }}
+
+
 .main-nav {
     display: flex;
     flex-wrap: wrap;
@@ -527,3 +538,80 @@ body.site-bg {
     text-align: center;
     width: fit-content;
 }
+
+/* Cyclops accent layer */
+.comic-panel {
+  background: linear-gradient(180deg, rgba(11,30,107,0.12), rgba(244,208,63,0.08));
+  border: 2px solid var(--x-blue);
+  box-shadow: 0 6px 0 var(--x-gold), 0 0 0 3px #000 inset;
+}
+
+.btn-primary {
+  background: var(--x-gold);
+  color: #0b1e6b;
+  border: 2px solid #000;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.badge-x {
+  background: var(--x-blue);
+  color: var(--x-offwhite);
+  border-radius: 9999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  border: 2px solid #000;
+}
+
+/* --- logo & header/footer polish --- */
+.brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.logo-badge { height:40px; width:auto; image-rendering:-webkit-optimize-contrast; }
+.logo-wordmark { height:26px; width:auto; transform: translateY(1px); }
+
+.site-header { background:#0b1e6b; border-bottom:4px solid var(--x-gold); }
+.header-inner { display:flex; align-items:center; justify-content:space-between; padding:10px 0; }
+
+.site-footer { margin-top:36px; padding:26px 0 40px; background:#0b1e6b; border-top:4px solid var(--x-gold); }
+.footer-inner { text-align:center; }
+.footer-badge { height:44px; width:auto; display:block; margin:0 auto 8px; }
+.footer-wordmark { height:22px; width:auto; display:block; margin:0 auto 6px; }
+.footer-tag { font-size:14px; }
+
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+
+/* subtle glow to harmonize color with Cyclops palette */
+.logo-badge, .footer-badge {
+  filter: drop-shadow(0 2px 0 rgba(0,0,0,.35));
+}
+.logo-wordmark, .footer-wordmark {
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,.25));
+}
+/* tables */
+.table-wrap { overflow:auto; border-radius:12px; border:1px solid rgba(255,255,255,.08); }
+.table { width:100%; border-collapse:collapse; background:#0f1326; }
+.table th, .table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.06); text-align:left; }
+.table thead th { background:#0b1227; position:sticky; top:0; z-index:1; }
+.table tbody tr:hover { background:rgba(255,255,255,.04); }
+
+/* series tiles */
+.series-tile .cover { aspect-ratio: 3/2; }
+
+/* gallery thumbs */
+.thumb { display:block; border:1px solid rgba(255,255,255,.08); border-radius:12px; overflow:hidden; background:#0f1326; text-decoration:none; color:inherit; }
+.thumb-img { width:100%; aspect-ratio:2/3; }
+.thumb-meta { padding:8px; }
+.thumb-title { font-weight:700; }
+
+/* controls */
+.controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.btn-group .btn { border-radius:8px; }
+.btn-group .btn.active { background: var(--x-gold); color:#111827; }
+
+/* better table readability on dark theme */
+.table-wrap { overflow:auto; border-radius:12px; border:1px solid rgba(255,255,255,.08); }
+.table { width:100%; border-collapse:collapse; background:#0f1326; }
+.table th, .table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.06); text-align:left; }
+.table thead th { background:#0b1227; position:sticky; top:0; z-index:1; }
+.table tbody tr:hover { background:rgba(255,255,255,.04); }

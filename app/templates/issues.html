@@ -1,49 +1,38 @@
 {% extends "base.html" %}
-
+{% block title %}Issues · ComixCatalog{% endblock %}
 {% block content %}
-<div class="page-heading">
-    <div>
-        <h1>
-            Issues for {{ series_title }}
-        </h1>
-        <div class="meta">
-            Series ID {{ series_id }} • {{ issues|length }} issue(s)
-        </div>
-    </div>
+<section class="section">
+  <div class="section-label badge-x">Issues (Static)</div>
 
-    <div>
-        <a class="back-link" href="/series/{{ series_id }}/gallery">View Gallery</a>
-    </div>
-</div>
-
-<div style="margin-bottom:1rem;">
-    <a class="back-link" href="/series">← Back to all series</a>
-</div>
-
-<div class="table-wrap">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Issue #</th>
-                <th>Cover Date</th>
-                <th>Thumbnail</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for issue in issues %}
-            <tr>
-                <td>#{{ issue.issue_number }}</td>
-                <td>{{ issue.cover_date }}</td>
-                <td>
-                    {% if issue.cover_image_url %}
-                        <img class="thumb" src="{{ issue.cover_image_url }}" alt="Cover for issue {{ issue.issue_number }}" />
-                    {% else %}
-                        <span class="card-sub">No image</span>
-                    {% endif %}
-                </td>
-            </tr>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:36%">Series</th>
+          <th style="width:12%">Issue #</th>
+          <th style="width:36%">Title</th>
+          <th style="width:16%">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in [
+          ["Amazing Spider-Man", "300", "Venom!", "/marketplace/issue/2"],
+          ["Uncanny X-Men", "266", "Gambit!", "/marketplace/issue/1"],
+          ["Daredevil", "168", "Elektra!", "/marketplace/issue/3"],
+          ["Avengers", "57", "Behold… The Vision!", "/marketplace/issue/4"],
+          ["Incredible Hulk", "181", "And Now… Wolverine!", "/marketplace/issue/5"],
+        ] %}
+        <tr>
+          <td>{{ row[0] }}</td>
+          <td>#{{ row[1] }}</td>
+          <td>{{ row[2] }}</td>
+          <td>
+            <a class="btn btn-outline" href="{{ row[3] }}">View</a>
+          </td>
+        </tr>
         {% endfor %}
-        </tbody>
+      </tbody>
     </table>
-</div>
+  </div>
+</section>
 {% endblock %}

@@ -1,60 +1,27 @@
 {% extends "base.html" %}
-
+{% block title %}Series · ComixCatalog{% endblock %}
 {% block content %}
-<div class="page-heading">
-    <div>
-        <h1>Series Browser</h1>
-        <div class="meta">
-            Search for a series and jump into issues or a visual gallery.
-        </div>
-    </div>
-
-    <div class="search-bar-wrapper">
-        <form action="/series" method="get">
-            <input
-                class="search-input"
-                type="text"
-                name="q"
-                placeholder="Search series title…"
-                value="{{ query | default('') }}"
-            />
-            <button class="search-button" type="submit">Search</button>
-        </form>
-    </div>
-</div>
-
-{% if series_list and series_list|length > 0 %}
-<div class="card-grid">
-    {% for series in series_list %}
-    <div class="card">
-        <div class="card-title">
-            {{ series.title }}
-        </div>
-
-        <div class="card-sub">
-            Series ID: {{ series.id }}
-        </div>
-
-        <div class="link-row">
-            {% if series.id %}
-            <a class="chip-link" href="/series/{{ series.id }}/issues">
-                View issues
-            </a>
-            <a class="chip-link" href="/series/{{ series.id }}/gallery">
-                View gallery
-            </a>
-            {% else %}
-            <div class="card-sub">
-                (no valid ID for links)
-            </div>
-            {% endif %}
-        </div>
-    </div>
+<section class="section">
+  <div class="section-label badge-x">Series (Static)</div>
+  <div class="grid cols-3">
+    {% for s in [
+      {"title":"Amazing Spider-Man","count":"(700+ issues)"},
+      {"title":"Uncanny X-Men","count":"(600+ issues)"},
+      {"title":"Daredevil","count":"(300+ issues)"},
+      {"title":"Iron Man","count":"(300+ issues)"},
+      {"title":"Avengers","count":"(400+ issues)"},
+      {"title":"Incredible Hulk","count":"(400+ issues)"},
+    ] %}
+    <article class="series-tile card">
+      <div class="cover cover-skeleton">Series</div>
+      <div class="card-title">{{ s.title }}</div>
+      <div class="muted">{{ s.count }}</div>
+      <div class="stack" style="margin-top:8px;">
+        <a class="btn btn-primary" href="/gallery">View Gallery</a>
+        <a class="btn btn-outline" href="/issues">View Issues</a>
+      </div>
+    </article>
     {% endfor %}
-</div>
-{% else %}
-<div class="card-sub">
-    No series found.
-</div>
-{% endif %}
+  </div>
+</section>
 {% endblock %}

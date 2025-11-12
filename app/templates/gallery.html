@@ -1,37 +1,82 @@
 {% extends "base.html" %}
-
+{% block title %}Gallery · ComixCatalog{% endblock %}
 {% block content %}
-<div class="page-heading">
-    <div>
-        <h1>
-            Gallery: {{ series_title }}
-        </h1>
-        <div class="meta">
-            Series ID {{ series_id }} • {{ issues|length }} cover(s)
-        </div>
-    </div>
-
-    <div>
-        <a class="back-link" href="/series/{{ series_id }}/issues">View Issues Table</a>
-    </div>
-</div>
-
-<div style="margin-bottom:1rem;">
-    <a class="back-link" href="/series">← Back to all series</a>
-</div>
-
-<div class="gallery-grid">
-    {% for issue in issues %}
-    <div class="gallery-card">
-        {% if issue.cover_image_url %}
-        <img
-            src="{{ issue.cover_image_url }}"
-            alt="Issue {{ issue.issue_number }} cover"
-        />
-        {% endif %}
-        <div class="gallery-issue-num">#{{ issue.issue_number }}</div>
-        <div class="card-sub">{{ issue.cover_date }}</div>
-    </div>
+<section class="section">
+  <div class="section-label badge-x">Gallery (Static)</div>
+  <div class="grid cols-3">
+    {% for i in range(9) %}
+    <a class="thumb" href="/marketplace/issue/1">
+      <div class="thumb-img cover-skeleton"></div>
+      <div class="thumb-meta">
+        <div class="thumb-title">Series · #{{ 100 + i }}</div>
+        <div class="muted">Year</div>
+      </div>
+    </a>
     {% endfor %}
-</div>
+  </div>
+</section>
+
+<script>
+function staticPrefix(){ return `{{ url_for('static', filename='') }}`; }
+function isAbs(u){ return /^https?:\/\//i.test(u||""); }
+function joinStatic(u){
+  // Normalize to /static/...
+  const base = staticPrefix(); // e.g. "/static/"
+  const clean = String(u||"").replace(/^\/?/, ""); // strip any leading slash
+  return base + clean;
+}
+
+async function resolveCoverURL(inputUrl, fallbacks = []) {
+  // inputUrl can be "img/covers/asm_300.jpg" or "/static/img/covers/asm_300.jpg" or absolute http(s)
+  const candidates = [];
+  if (!inputUrl) {
+    // no hint, nothing to try
+  } else if (isAbs(inputUrl)) {
+    candidates.push(inputUrl);
+  } else if (inputUrl.startsWith('/static/')) {
+    candidates.push(inputUrl);
+  } else {
+    candidates.push(joinStatic(inputUrl)); // "/static/img/covers/..."
+  }
+
+  // Try common extension swaps if the base fails (png/jpg/jpeg/webp)
+  const baseNoExt = (inputUrl||"").replace(/\.(png|jpg|jpeg|webp)$/i, "");
+  const extList = [".jpg",".jpeg",".png",".webp"];
+  for (const ext of extList) {
+    const guess = inputUrl && !/\.(png|jpg|jpeg|webp)$/i.test(inputUrl)
+      ? joinStatic(baseNoExt + ext)
+      : null;
+    if (guess && !candidates.includes(guess)) candidates.push(guess);
+  }
+
+  // Additional custom fallbacks (optional)
+  for (const fb of fallbacks) {
+    const v = isAbs(fb) ? fb : joinStatic(fb);
+    if (!candidates.includes(v)) candidates.push(v);
+  }
+
+  // Probe in order using HEAD (fast), fallback to GET if HEAD blocked
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { method: "HEAD", cache: "no-store" });
+      if (res.ok) return url;
+    } catch {}
+    try {
+      const res = await fetch(url, { method: "GET", cache: "no-store" });
+      if (res.ok) return url;
+    } catch {}
+  }
+  return null; // none found
+}
+
+// Render helper with on-error fallback
+async function coverTag(cover_url) {
+  const found = await resolveCoverURL(cover_url);
+  if (!found) {
+    return `<div class="cover cover-skeleton">No cover</div>`;
+  }
+  return `<img class="cover" src="${found}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`;
+}
+</script>
+
 {% endblock %}

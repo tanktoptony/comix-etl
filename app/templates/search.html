@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% block title %}Search · ComixCatalog{% endblock %}
+{% block content %}
+
+<section class="comic-panel" style="padding:12px;">
+  <div class="section-label badge-x">Search (Mock)</div>
+  <h1 class="hero-title" style="margin:6px 0 10px;">Find comics</h1>
+  <div class="controls">
+    <input id="q" class="input" type="text" placeholder="Search series, issues, creators…" />
+    <select id="sort" class="input">
+      <option value="relevance">Sort: Relevance</option>
+      <option value="series_asc">Series A→Z</option>
+      <option value="series_desc">Series Z→A</option>
+      <option value="issue_asc">Issue # ↑</option>
+      <option value="issue_desc">Issue # ↓</option>
+    </select>
+    <div class="btn-group" role="tablist" aria-label="View">
+      <button id="viewGrid" class="btn btn-outline active" aria-pressed="true">Grid</button>
+      <button id="viewTable" class="btn btn-outline" aria-pressed="false">Table</button>
+    </div>
+  </div>
+  <div class="muted" style="margin-top:6px;">UI-only mock. Data below is sample and local to this page.</div>
+</section>
+
+<!-- Grid view -->
+<div id="resultsGrid" class="grid cols-3" style="margin-top:12px;"></div>
+
+<!-- Table view -->
+<div id="resultsTableWrap" class="table-wrap" style="margin-top:12px; display:none;">
+  <table id="resultsTable" class="table">
+    <thead>
+      <tr>
+        <th style="width:36%">Series</th>
+        <th style="width:12%">Issue #</th>
+        <th style="width:36%">Title</th>
+        <th style="width:16%">Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+function staticPrefix(){ return `{{ url_for('static', filename='') }}`; }
+function isAbs(u){ return /^https?:\/\//i.test(u||""); }
+function joinStatic(u){
+  // Normalize to /static/...
+  const base = staticPrefix(); // e.g. "/static/"
+  const clean = String(u||"").replace(/^\/?/, ""); // strip any leading slash
+  return base + clean;
+}
+
+async function resolveCoverURL(inputUrl, fallbacks = []) {
+  // inputUrl can be "img/covers/asm_300.jpg" or "/static/img/covers/asm_300.jpg" or absolute http(s)
+  const candidates = [];
+  if (!inputUrl) {
+    // no hint, nothing to try
+  } else if (isAbs(inputUrl)) {
+    candidates.push(inputUrl);
+  } else if (inputUrl.startsWith('/static/')) {
+    candidates.push(inputUrl);
+  } else {
+    candidates.push(joinStatic(inputUrl)); // "/static/img/covers/..."
+  }
+
+  // Try common extension swaps if the base fails (png/jpg/jpeg/webp)
+  const baseNoExt = (inputUrl||"").replace(/\.(png|jpg|jpeg|webp)$/i, "");
+  const extList = [".jpg",".jpeg",".png",".webp"];
+  for (const ext of extList) {
+    const guess = inputUrl && !/\.(png|jpg|jpeg|webp)$/i.test(inputUrl)
+      ? joinStatic(baseNoExt + ext)
+      : null;
+    if (guess && !candidates.includes(guess)) candidates.push(guess);
+  }
+
+  // Additional custom fallbacks (optional)
+  for (const fb of fallbacks) {
+    const v = isAbs(fb) ? fb : joinStatic(fb);
+    if (!candidates.includes(v)) candidates.push(v);
+  }
+
+  // Probe in order using HEAD (fast), fallback to GET if HEAD blocked
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { method: "HEAD", cache: "no-store" });
+      if (res.ok) return url;
+    } catch {}
+    try {
+      const res = await fetch(url, { method: "GET", cache: "no-store" });
+      if (res.ok) return url;
+    } catch {}
+  }
+  return null; // none found
+}
+
+// Render helper with on-error fallback
+async function coverTag(cover_url) {
+  const found = await resolveCoverURL(cover_url);
+  if (!found) {
+    return `<div class="cover cover-skeleton">No cover</div>`;
+  }
+  return `<img class="cover" src="${found}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`;
+}
+
+// -------------------- MOCK DATA (edit freely) --------------------
+const MOCK_DATA = [
+  { issue_id: 2, series_title: "Amazing Spider-Man", issue_number: 300, issue_title: "Venom!", creators: "Michelinie, McFarlane", cover_url: "img/covers/asm-1.jpg" },
+  { issue_id: 1, series_title: "Uncanny X-Men",     issue_number: 266, issue_title: "Gambit!", creators: "Claremont, Lee",      cover_url: "img/covers/uxm-266.jpg" },
+  { issue_id: 3, series_title: "Daredevil",         issue_number: 168, issue_title: "Elektra!", creators: "Miller",             cover_url: "img/covers/dd-168.jpg" },
+  { issue_id: 4, series_title: "Avengers",          issue_number: 57,  issue_title: "Behold… The Vision!", creators: "Thomas, Buscema", cover_url: "" },
+  { issue_id: 5, series_title: "Incredible Hulk",   issue_number: 181, issue_title: "…Wolverine!", creators: "Wein, Trimpe",     cover_url: "" },
+  {
+    issue_id: 2,
+    series_title: "Amazing Spider-Man",
+    issue_number: 300,
+    issue_title: "Venom!",
+    creators: "Michelinie, McFarlane",
+    cover_url: "img/covers/asm-1.jpg"
+  },
+  {
+    issue_id: 1,
+    series_title: "Uncanny X-Men",
+    issue_number: 266,
+    issue_title: "Gambit!",
+    creators: "Claremont, Lee",
+    cover_url: "img/covers/uxm-266.jpg"
+  },
+  {
+    issue_id: 3,
+    series_title: "Daredevil",
+    issue_number: 168,
+    issue_title: "Elektra!",
+    creators: "Miller",
+    cover_url: "img/covers/dd_168.jpg"
+  },
+  {
+    issue_id: 4,
+    series_title: "Avengers",
+    issue_number: 57,
+    issue_title: "Behold… The Vision!",
+    creators: "Thomas, Buscema",
+    cover_url: "avengers-223.jpg"
+  },
+  {
+    issue_id: 5,
+    series_title: "Incredible Hulk",
+    issue_number: 181,
+    issue_title: "…Wolverine!",
+    creators: "Wein, Trimpe",
+    cover_url: "hulk-102.jpg"
+  },
+];
+
+// -------------------- DOM --------------------
+const qEl = document.getElementById('q');
+const sortEl = document.getElementById('sort');
+const gridEl = document.getElementById('resultsGrid');
+const tableWrapEl = document.getElementById('resultsTableWrap');
+const tableBodyEl = document.querySelector('#resultsTable tbody');
+const btnGrid = document.getElementById('viewGrid');
+const btnTable = document.getElementById('viewTable');
+
+// -------------------- Helpers --------------------
+function staticPrefix() { return `{{ url_for('static', filename='') }}`; }
+function isAbs(url) { return /^https?:\/\//i.test(url || ""); }
+function coverSrc(url) {
+  if (!url) return null;
+  return isAbs(url) ? url : staticPrefix() + url.replace(/^\/?/, '');
+}
+function escapeHTML(s){ return (s ?? "").toString().replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;" }[m])); }
+function norm(s){ return (s ?? "").toString().toLowerCase(); }
+
+function score(item, q) {
+  // simple relevance scoring: series match > title match > number match
+  const n = norm(q);
+  if (!n) return 0;
+  let s = 0;
+  if (norm(item.series_title).includes(n)) s += 3;
+  if (norm(item.issue_title).includes(n)) s += 2;
+  if (String(item.issue_number).includes(n)) s += 1;
+  if (norm(item.creators || '').includes(n)) s += 1;
+  return s;
+}
+
+function sortItems(list, mode, q) {
+  const arr = [...list];
+  if (mode === "series_asc")  return arr.sort((a,b)=>norm(a.series_title).localeCompare(norm(b.series_title)));
+  if (mode === "series_desc") return arr.sort((a,b)=>norm(b.series_title).localeCompare(norm(a.series_title)));
+  if (mode === "issue_asc")   return arr.sort((a,b)=>(a.issue_number ?? 0)-(b.issue_number ?? 0));
+  if (mode === "issue_desc")  return arr.sort((a,b)=>(b.issue_number ?? 0)-(a.issue_number ?? 0));
+  // relevance (default)
+  return arr.sort((a,b)=>score(b,q)-score(a,q));
+}
+
+// -------------------- Renderers --------------------
+function buildSrc(u) {
+  if (!u) return null;
+  if (/^https?:\/\//i.test(u)) return u;          // absolute URL: leave as-is
+  if (u.startsWith('/static/')) return u;         // already a /static/ path
+  return `{{ url_for('static', filename='') }}`   // e.g. "/static/"
+         + u.replace(/^\/?/, '');                 // add "img/covers/..." -> "/static/img/covers/..."
+}
+
+function card(r) {
+  const src = buildSrc(r.cover_url);
+  const img = src
+    ? `<div class="cover"><img src="${src}" alt="" 
+         onerror="this.parentElement.innerHTML='<div class=&quot;cover cover-skeleton&quot;>No cover</div>'"
+         style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></div>`
+    : `<div class="cover cover-skeleton">No cover</div>`;
+
+  return `
+    <article class="card">
+      ${img}
+      <div class="card-title" style="margin-top:8px;">${r.series_title} #${r.issue_number}</div>
+      ${r.issue_title ? `<div class="muted">${r.issue_title}</div>` : ``}
+      <div class="stack" style="margin-top:8px;">
+        <a class="btn btn-outline" href="/ui/issue/${r.issue_id}">View</a>
+      </div>
+    </article>
+  `;
+}
+
+function row(i) {
+  return `
+    <tr>
+      <td>${escapeHTML(i.series_title)}</td>
+      <td>#${escapeHTML(i.issue_number)}</td>
+      <td>${escapeHTML(i.issue_title || "")}</td>
+      <td><a class="btn btn-outline" href="/ui/issue/${i.issue_id}">View</a></td>
+    </tr>
+  `;
+}
+
+function renderGrid(list) {
+  if (!list.length) {
+    gridEl.innerHTML = `<div class="card" style="grid-column:1 / -1; text-align:center;">
+      <div class="muted">No matches yet. Try another term.</div></div>`;
+    return;
+  }
+  gridEl.innerHTML = list.map(card).join('');
+}
+
+function renderTable(list) {
+  if (!list.length) {
+    tableBodyEl.innerHTML = `<tr><td colspan="4" class="muted" style="text-align:center;">No matches yet. Try another term.</td></tr>`;
+    return;
+  }
+  tableBodyEl.innerHTML = list.map(row).join('');
+}
+
+// -------------------- Search flow --------------------
+function filter(q) {
+  const n = norm(q);
+  if (!n) return [];
+  return MOCK_DATA.filter(i =>
+    norm(i.series_title).includes(n) ||
+    String(i.issue_number ?? '').includes(n) ||
+    norm(i.issue_title).includes(n) ||
+    norm(i.creators || '').includes(n)
+  );
+}
+
+let timer = null;
+function debounced(fn, ms=160) {
+  return (...args) => {
+    clearTimeout(timer); timer = setTimeout(()=>fn(...args), ms);
+  };
+}
+
+let view = "grid"; // "grid" | "table"
+function setView(v) {
+  view = v;
+  const isGrid = v === "grid";
+  gridEl.style.display = isGrid ? "" : "none";
+  tableWrapEl.style.display = isGrid ? "none" : "";
+
+  btnGrid.classList.toggle("active", isGrid);
+  btnGrid.setAttribute("aria-pressed", String(isGrid));
+  btnTable.classList.toggle("active", !isGrid);
+  btnTable.setAttribute("aria-pressed", String(!isGrid));
+}
+
+const run = debounced(() => {
+  const q = qEl.value.trim();
+  const matches = sortItems(filter(q), sortEl.value, q);
+  if (view === "grid") renderGrid(matches); else renderTable(matches);
+}, 160);
+
+// -------------------- Wire up --------------------
+qEl.addEventListener('input', run);
+sortEl.addEventListener('change', run);
+btnGrid.addEventListener('click', () => { setView("grid"); run(); });
+btnTable.addEventListener('click', () => { setView("table"); run(); });
+
+// Initial state
+setView("grid");
+</script>
+{% endblock %}

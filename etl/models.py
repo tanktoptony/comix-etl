@@ -1,4 +1,8 @@
 from __future__ import annotations
+
+from datetime import date, datetime
+from typing import Optional
+
 from sqlalchemy import (
     String,
     Integer,
@@ -6,6 +10,8 @@ from sqlalchemy import (
     Text,
     ForeignKey,
     DateTime,
+    Boolean,
+    BigInteger,
     func,
 )
 from sqlalchemy.orm import (
@@ -15,63 +21,36 @@ from sqlalchemy.orm import (
     relationship,
 )
 
+
 class Base(DeclarativeBase):
     pass
+
+
+# --- Core User ---
 
 class User(Base):
     __tablename__ = "user"
 
     user_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    email: Mapped[str] = mapped_column(String, unique=True)
-    password_hash: Mapped[str] = mapped_column(String)
-    display_name: Mapped[str] = mapped_column(String)
-    role: Mapped[str] = mapped_column(String, default="buyer")  # "buyer" or "seller"
+    email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String, nullable=False)
+    display_name: Mapped[str] = mapped_column(String, nullable=False)
+
+    # "COLLECTOR" or "SELLER" – better than buyer/seller for your pitch
+    role: Mapped[str] = mapped_column(String, default="COLLECTOR")
+
+    # Relationships for library flows
+    collections: Mapped[list["CollectionItem"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    wishlists: Mapped[list["WishlistItem"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
 
 
-class Listing(Base):
-    __tablename__ = "listing"
-
-    listing_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-
-    issue_id: Mapped[int] = mapped_column(ForeignKey("issue.issue_id"))
-    seller_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
-
-    grade_label: Mapped[str | None] = mapped_column(String)    # "CGC 9.6 Slabbed"
-    condition_notes: Mapped[str | None] = mapped_column(Text)  # "Sharp corners, white pages"
-    asking_price_cents: Mapped[int] = mapped_column(Integer)   # 120000 = $1200.00
-    quantity_available: Mapped[int] = mapped_column(Integer, default=1)
-
-
-class CartItem(Base):
-    __tablename__ = "cart_item"
-
-    cart_item_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    buyer_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
-    listing_id: Mapped[int] = mapped_column(ForeignKey("listing.listing_id"))
-    quantity: Mapped[int] = mapped_column(Integer, default=1)
-
-
-class Order(Base):
-    __tablename__ = "order"
-
-    order_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    buyer_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
-    total_cents: Mapped[int] = mapped_column(Integer)
-    created_at: Mapped[DateTime | None] = mapped_column(DateTime, server_default=func.now())
-    status: Mapped[str] = mapped_column(String, default="PLACED")  # later: PAID, SHIPPED, etc.
-
-
-class OrderItem(Base):
-    __tablename__ = "order_item"
-
-    order_item_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    order_id: Mapped[int] = mapped_column(ForeignKey("order.order_id"))
-    listing_id: Mapped[int] = mapped_column(ForeignKey("listing.listing_id"))
-
-    issue_title: Mapped[str | None] = mapped_column(Text)
-    issue_number: Mapped[str | None] = mapped_column(String)
-    grade_label: Mapped[str | None] = mapped_column(String)
-    price_cents: Mapped[int] = mapped_column(Integer)
+# --- Publisher / Series ---
 
 class Publisher(Base):
     __tablename__ = "publisher"
@@ -81,79 +60,107 @@ class Publisher(Base):
 
     series: Mapped[list["Series"]] = relationship(back_populates="publisher")
 
+
 class Series(Base):
     __tablename__ = "series"
 
     series_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(Text, nullable=False)
-    publisher_id: Mapped[int | None] = mapped_column(ForeignKey("publisher.publisher_id"))
-    start_year: Mapped[int | None] = mapped_column(Integer)
-    volume: Mapped[int | None] = mapped_column(Integer)
 
-    # which external system did this series come from?
-    source_key: Mapped[str | None] = mapped_column(Text)        # e.g. marvel series id
-    source_system: Mapped[str | None] = mapped_column(Text)     # e.g. "marvel"
+    publisher_id: Mapped[Optional[int]] = mapped_column(ForeignKey("publisher.publisher_id"))
+    start_year: Mapped[Optional[int]] = mapped_column(Integer)
+    volume: Mapped[Optional[int]] = mapped_column(Integer)
 
-    publisher: Mapped["Publisher"] = relationship(back_populates="series")
+    # external source linkage (e.g. Marvel series id)
+    source_key: Mapped[Optional[str]] = mapped_column(Text)
+    source_system: Mapped[Optional[str]] = mapped_column(Text)
+
+    publisher: Mapped[Optional["Publisher"]] = relationship(back_populates="series")
     issues: Mapped[list["Issue"]] = relationship(
         back_populates="series",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
     )
 
-class Creator(Base):
-    __tablename__ = "creator"
-
-    creator_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(Text, nullable=False)
+# --- Issue (enhanced for Marvel + UI) ---
 
 class Issue(Base):
     __tablename__ = "issue"
 
     issue_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
-    series_id: Mapped[int] = mapped_column(ForeignKey("series.series_id"))
+    series_id: Mapped[int] = mapped_column(ForeignKey("series.series_id"), nullable=False)
 
     # business identity
-    issue_number: Mapped[str | None] = mapped_column(Text)
-    title: Mapped[str | None] = mapped_column(Text)   # <- add this so we can show "Uncanny X-Men #266"
+    issue_number: Mapped[Optional[str]] = mapped_column(Text)
+    title: Mapped[Optional[str]] = mapped_column(Text)   # e.g. "Uncanny X-Men #266"
 
-    # dates/pricing metadata
-    release_date: Mapped[Date | None] = mapped_column(Date)  # <- rename of cover_date for clarity
-    price_cents: Mapped[int | None] = mapped_column(Integer)
-    isbn: Mapped[str | None] = mapped_column(Text)
-    upc: Mapped[str | None] = mapped_column(Text)
+    # dates / pricing metadata
+    release_date: Mapped[Optional[date]] = mapped_column(Date)      # display date
+    price_cents: Mapped[Optional[int]] = mapped_column(Integer)
+    isbn: Mapped[Optional[str]] = mapped_column(Text)
+    upc: Mapped[Optional[str]] = mapped_column(Text)
 
-    description: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[Optional[str]] = mapped_column(Text)
 
     # display
-    cover_url: Mapped[str | None] = mapped_column(Text)  # <- we need this to render cover art
+    cover_url: Mapped[Optional[str]] = mapped_column(Text)
+
+    # Marvel / external linkage
+    marvel_series_id: Mapped[Optional[int]] = mapped_column(BigInteger, index=True)
+    marvel_comic_id: Mapped[Optional[int]] = mapped_column(BigInteger, unique=True, index=True)
+
+    # richer metadata for browsing / variants
+    onsale_date: Mapped[Optional[date]] = mapped_column(Date)
+    is_variant: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    variant_name: Mapped[Optional[str]] = mapped_column(Text)
+    issue_order: Mapped[Optional[int]] = mapped_column(Integer)  # stable ordering within series
 
     series: Mapped["Series"] = relationship(back_populates="issues")
 
-class IssueCreator(Base):
-    __tablename__ = "issue_creator"
+    # reverse relationships for collection/wishlist
+    collections: Mapped[list["CollectionItem"]] = relationship(back_populates="issue")
+    wishlists: Mapped[list["WishlistItem"]] = relationship(back_populates="issue")
 
-    issue_id: Mapped[int] = mapped_column(ForeignKey("issue.issue_id"), primary_key=True)
-    creator_id: Mapped[int] = mapped_column(ForeignKey("creator.creator_id"), primary_key=True)
-    role: Mapped[str] = mapped_column(String, primary_key=True)
 
-class EtlRun(Base):
-    __tablename__ = "etl_run"
+# --- Collection & Wishlist ---
 
-    run_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    source_system: Mapped[str | None] = mapped_column(String)
+class CollectionItem(Base):
+    __tablename__ = "collection_item"
 
-    started_at: Mapped[DateTime | None] = mapped_column(DateTime, server_default=func.now())
-    finished_at: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("user.user_id"), primary_key=True
+    )
+    issue_id: Mapped[int] = mapped_column(
+        ForeignKey("issue.issue_id"), primary_key=True
+    )
+    added_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now()
+    )
 
-    records_read: Mapped[int | None] = mapped_column(Integer)
-    records_loaded: Mapped[int | None] = mapped_column(Integer)
+    user: Mapped["User"] = relationship(back_populates="collections")
+    issue: Mapped["Issue"] = relationship(back_populates="collections")
 
-    status: Mapped[str | None] = mapped_column(String)
-    notes: Mapped[str | None] = mapped_column(Text)
 
-from etl.db import get_engine
+class WishlistItem(Base):
+    __tablename__ = "wishlist_item"
 
-# Create tables if they don't exist yet
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("user.user_id"), primary_key=True
+    )
+    issue_id: Mapped[int] = mapped_column(
+        ForeignKey("issue.issue_id"), primary_key=True
+    )
+    added_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now()
+    )
+
+    user: Mapped["User"] = relationship(back_populates="wishlists")
+    issue: Mapped["Issue"] = relationship(back_populates="wishlists")
+
+
+# --- Bootstrapping (keep for now; can move to a db module later) ---
+
+from etl.db import get_engine  # if this is legacy, we can replace with a simple get_engine
+
 engine = get_engine()
 Base.metadata.create_all(bind=engine)

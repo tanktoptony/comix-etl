@@ -1,54 +1,41 @@
 {% extends "base.html" %}
+{% block title %}ComixCatalog Marketplace{% endblock %}
 {% block content %}
 
-<div class="comic-panel">
-    <div class="caption-box">Key Issue Marketplace</div>
+<section class="hero comic-panel">
+  <div class="hero-kicker badge-x">Comic Marketplace</div>
+  <h1 class="hero-title">ComixCatalog Marketplace</h1>
+  <p class="hero-sub">Browse and compare issues across publishers and eras. Track your collection, wishlist, and purchases.</p>
 
-    <h1 class="title-block">
-        ComixCatalog Marketplace
-    </h1>
+  <div class="hero-search">
+    <input class="input" type="text" placeholder="Search series, issues, creators… (UI only for now)" disabled>
+    <button class="btn btn-primary" disabled>Search</button>
+    <div class="muted" style="margin-top:6px;">Search will activate when data layer is connected.</div>
+  </div>
+</section>
 
-    <p class="muted">
-        Hunt key issues. Compare condition. Buy the copy you want.
-    </p>
-
-    <div class="search-row">
-        <input class="search-input"
-               placeholder="Search (ex: Gambit, 1st appearance, Uncanny X-Men 266)" />
-        <button class="cta-button">
-            Search
-        </button>
-    </div>
-</div>
-
-<div class="result-card">
-    <div class="cover-col">
-        <div class="cover-frame">
-            <img src="{{ issue.cover_url }}"
-                 alt="{{ issue.title }}" />
-        </div>
-    </div>
-
-    <div class="info-col">
-        <div class="caption-box">First Gambit</div>
-
-        <div class="issue-headline">
-            {{ issue.title }}
-        </div>
-
-        <div class="muted tiny">
-            {{ issue.series_title }} #{{ issue.issue_number }} • {{ issue.year }}
-        </div>
-
-        <div class="bubble">
-            "{{ issue.tagline }}"
-        </div>
-
-        <a class="cta-button"
-           href="/marketplace/issue/{{ issue.issue_id }}">
-            View Listings →
-        </a>
-    </div>
-</div>
+<section class="section">
+  <div class="section-label badge-x">Featured (Static)</div>
+  <div class="grid cols-3">
+    <article class="card">
+      <div class="cover cover-skeleton">Cover</div>
+      <div class="card-title">Amazing Spider-Man #300</div>
+      <div class="card-sub muted">1988 · Todd McFarlane</div>
+      <a class="btn btn-outline" href="/marketplace/issue/2">View</a>
+    </article>
+    <article class="card">
+      <div class="cover cover-skeleton">Cover</div>
+      <div class="card-title">Uncanny X-Men #266</div>
+      <div class="card-sub muted">1990 · Andy Kubert</div>
+      <a class="btn btn-outline" href="/marketplace/issue/1">View</a>
+    </article>
+    <article class="card">
+      <div class="cover cover-skeleton">Cover</div>
+      <div class="card-title">Daredevil #168</div>
+      <div class="card-sub muted">1981 · Frank Miller</div>
+      <a class="btn btn-outline" href="/marketplace/issue/3">View</a>
+    </article>
+  </div>
+</section>
 
 {% endblock %}
